@@ -1,5 +1,7 @@
+const PORT = process.env.PORT || 3000;
+
 // socket io
-const socket = io("http://localhost:5001", {
+const socket = io(`http://localhost:${PORT}`, {
     path: "/socket.io",
     transports: ["websocket"],
 });
