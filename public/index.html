@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="ko">
+
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>socket.io Test</title>
+	<link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+	<header class="header">
+		<h2>그림판</h2>
+	</header>
+	<main class="main">
+		<nav class="nav">
+			<button id="eraseBtn">지우기</button>
+		</nav>
+		<canvas id="canvasJs" class="canvas" width="700px" height="700px"></canvas>
+	</main>
+
+	<!-- index.js를 같은 폴더에서 불러옵니다. defer로 로드 시 DOMContentLoaded 전에 실행되지 않음 -->
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="index.js"></script>
+</body>
+
+</html>

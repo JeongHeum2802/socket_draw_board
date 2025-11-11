@@ -1,0 +1,23 @@
+body {
+    margin: 0;
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: aliceblue;
+}
+
+.canvas {
+    background-color: rgb(255, 255, 255);
+}
+
+.main {
+    display: flex;
+    flex-direction: column;
+    gap:4px;
+}
+
+.nav {
+    display: flex;
+}
