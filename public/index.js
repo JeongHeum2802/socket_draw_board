@@ -1,7 +1,7 @@
 const PORT = 3000;
 
 // socket io
-const socket = io(`http://localhost:${PORT}`, {
+const socket = io("/", {
     path: "/socket.io",
     transports: ["websocket"],
 });
