@@ -13,34 +13,37 @@ var ctx = canvas.getContext("2d");
 canvas.width = 700;
 canvas.height = 700;
 
+// 클라이언트Id마다 마지막 offset을 저장
+const lastOffset = {}
+
+// 그리는 여부
 let painting = false;
 
 // 그리기 취소
-function stopPainting() {
-    socket.emit("upPen");
+function stopPainting(event) {
+    painting = false;
 }
 
 // 그리기 시작
-function startPainting() {
-    socket.emit("downPen");
+function startPainting(event) {
+    painting = true;
+    const x = event.offsetX;
+    const y = event.offsetY;
+    socket.emit("stroke:start", {x, y});
 }
 
 // 마우스 움직일 때 (캔버스 위에서)
 function onMouseMove(event) {
-
-    const x = event.offsetX;
-    const y = event.offsetY;
-
     if (painting) {
-        socket.emit("paint", { x, y });
+        const x = event.offsetX;
+        const y = event.offsetY;
+        socket.emit("stroke:draw", {x, y});
     }
 }
 
 // 지우기 버튼을 눌렀을 때
 function onClickEraseButton() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
-
 
 // 캔버스 이벤트 리스너
 if (canvas) {
@@ -50,27 +53,11 @@ if (canvas) {
     canvas.addEventListener("mouseleave", stopPainting);
 }
 
-// 지우기 버튼 이벤트 리스너
-const eraseBtn = document.getElementById("eraseBtn");
-if (eraseBtn) {
-    eraseBtn.addEventListener("click", onClickEraseButton)
-}
+// socket 
 
-// 다른 클라에서 서버로 보낸 x, y좌표를 서버에서 받음
-socket.on("paintAll", (data) => {
-    ctx.lineTo(data.x, data.y);
-    ctx.stroke();
-})
-
-// 펜 다운 업을 socket에서 주는 데이터로 컨트롤
-socket.on("upPenAll", () => {
-    painting = false;
-    console.log("펜 업");
-})
-
-socket.on("downPenAll", () => {
-    painting = true;
-    console.log("펜 다운");
-    ctx.beginPath();
-})
-
+// 그리기 시작 (lastOffset을 갱신)
+socket.on("stroke:start", (data) => {
+    const { id, x, y } = data;
+    lastOffset[id] = {x, y};
+    console.log(lastOffset); // 여기부터 시작
+});

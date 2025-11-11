@@ -26,23 +26,24 @@ io.on("connection", (socket) => {
     console.log("클라이언트 접속 : ", socket.id);
     clearInterval(socket.interval);
 
-    socket.on("disconnect", () => {
-        console.log("연결 끊김");
+    // 그리기 시작 (down) (시작 좌표를 보냄)
+    socket.on("stroke:start", (data) => {
+        const formatData = {
+            id : socket.id, 
+            x : data.x,
+            y : data.y, 
+        }
+        io.emit("stroke:start", formatData);
     });
 
-    // 그림 좌표를 받으면 모든 socket에 리턴
-    socket.on("paint", (data) => {
-        io.emit("paintAll", data);
-    });
-
-    // 펜을 up했을 때
-    socket.on("upPen", () => {
-        io.emit("upPenAll");
-    });
-
-    // 펜을 다운했을 때
-    socket.on("downPen", () => {
-        io.emit("downPenAll");
+    // 그리기 (그리는 좌표를 보냄)
+    socket.on("stroke:draw", (data) => {
+        const formatData = {
+            id :socket.id,
+            x : data.x,
+            y : data.y,
+        }
+        io.emit("stroke:draw", formatData);
     });
 });
 
