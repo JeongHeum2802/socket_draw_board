@@ -11,7 +11,7 @@ const app = express();
 app.use(express.static(path.join(__dirname, "public")));
 
 const server = app.listen(PORT, () => {
-    console.log("5001 포트에서 실행 중");
+    console.log(`${PORT} 포트에서 실행 중`);
 });
 
 const io = new Server(server, {
