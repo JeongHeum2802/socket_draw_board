@@ -46,6 +46,7 @@ io.on("connection", (socket) => {
             state: "start",
             x: data.x,
             y: data.y,
+            color: data.color,
         });
 
         // 클라이언트들에 데이터 보냄
@@ -53,6 +54,7 @@ io.on("connection", (socket) => {
             id: socket.id,
             x: data.x,
             y: data.y,
+            color: data.color,
         }
         io.emit("stroke:start", formatData);
     });
@@ -65,6 +67,7 @@ io.on("connection", (socket) => {
             state: "draw",
             x: data.x,
             y: data.y,
+            color: data.color,
         });
 
         // 클라이언트들에 데이터 보냄
@@ -72,6 +75,7 @@ io.on("connection", (socket) => {
             id: socket.id,
             x: data.x,
             y: data.y,
+            color: data.color,
         }
         io.emit("stroke:draw", formatData);
     });
@@ -83,6 +87,7 @@ io.on("connection", (socket) => {
             state: "end",
             x: data.x,
             y: data.y,
+            color: data.color,
         })
     });
 

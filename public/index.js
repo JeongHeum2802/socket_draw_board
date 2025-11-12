@@ -10,6 +10,9 @@ const socket = io("/", {
 const canvas = document.getElementById("canvasJs");
 var ctx = canvas.getContext("2d");
 
+// 색상 input DOM 객체
+const colorInput = document.getElementById("colorInput");
+
 canvas.width = 700;
 canvas.height = 700;
 
@@ -27,17 +30,20 @@ function stopPainting(event) {
 // 그리기 시작
 function startPainting(event) {
     painting = true;
+
+    const color = colorInput.value;
     const x = event.offsetX;
     const y = event.offsetY;
-    socket.emit("stroke:start", { x, y });
+    socket.emit("stroke:start", { x, y, color });
 }
 
 // 마우스 움직일 때 (캔버스 위에서)
 function onMouseMove(event) {
     if (painting) {
+        const color = colorInput.value;
         const x = event.offsetX;
         const y = event.offsetY;
-        socket.emit("stroke:draw", { x, y });
+        socket.emit("stroke:draw", { x, y, color });
     }
 }
 
@@ -70,9 +76,11 @@ socket.on("stroke:start", (data) => {
 
 // 그리기
 socket.on("stroke:draw", (data) => {
-    const { id, x, y } = data;
+    const { id, x, y, color } = data;
+    
     ctx.beginPath();
     ctx.moveTo(lastOffset[id].x, lastOffset[id].y);
+    ctx.strokeStyle = color
     ctx.lineTo(x, y);
     ctx.stroke();
     lastOffset[id] = { x, y };
@@ -85,14 +93,14 @@ socket.on("stroke:erase", () => {
 
 // 접속 시 서버 좌표 데이터 받아서 그리기
 socket.on("serverOffset", (data) => {
-    console.log(data);
     Object.keys(data).forEach(id => {
         data[id].forEach(offsetData => {
-            const { state, x, y } = offsetData;
+            const { state, x, y, color } = offsetData;
 
             if (state == 'start') {
                 ctx.beginPath();
                 ctx.moveTo(x, y);
+                ctx.strokeStyle = color;
             }
             else if(offsetData.state == 'draw') {
                 ctx.lineTo(x, y);
