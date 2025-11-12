@@ -45,5 +45,10 @@ io.on("connection", (socket) => {
         }
         io.emit("stroke:draw", formatData);
     });
+
+    // 지우기 명령 전송
+    socket.on("stroke:erase", () => {
+        io.emit("stroke:erase");
+    })
 });
 

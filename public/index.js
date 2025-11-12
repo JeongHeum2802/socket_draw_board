@@ -43,6 +43,7 @@ function onMouseMove(event) {
 
 // 지우기 버튼을 눌렀을 때
 function onClickEraseButton() {
+    socket.emit("stroke:erase");
 }
 
 // 캔버스 이벤트 리스너
@@ -53,11 +54,31 @@ if (canvas) {
     canvas.addEventListener("mouseleave", stopPainting);
 }
 
+// 지우기 버튼 이벤트 리스너
+const eraseBtn = document.getElementById("eraseBtn");
+if(eraseBtn) {
+    eraseBtn.addEventListener("click", onClickEraseButton);
+}
+
 // socket 
 
 // 그리기 시작 (lastOffset을 갱신)
 socket.on("stroke:start", (data) => {
     const { id, x, y } = data;
     lastOffset[id] = {x, y};
-    console.log(lastOffset); // 여기부터 시작
 });
+
+// 그리기
+socket.on("stroke:draw", (data) => {
+    const { id, x, y } = data;
+    ctx.beginPath();
+    ctx.moveTo(lastOffset[id].x, lastOffset[id].y);
+    ctx.lineTo(x, y);
+    ctx.stroke();
+    lastOffset[id] = {x, y};
+});
+
+// 지우기
+socket.on("stroke:erase", () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+})
