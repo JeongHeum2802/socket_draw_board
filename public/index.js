@@ -29,7 +29,7 @@ function startPainting(event) {
     painting = true;
     const x = event.offsetX;
     const y = event.offsetY;
-    socket.emit("stroke:start", {x, y});
+    socket.emit("stroke:start", { x, y });
 }
 
 // 마우스 움직일 때 (캔버스 위에서)
@@ -37,7 +37,7 @@ function onMouseMove(event) {
     if (painting) {
         const x = event.offsetX;
         const y = event.offsetY;
-        socket.emit("stroke:draw", {x, y});
+        socket.emit("stroke:draw", { x, y });
     }
 }
 
@@ -56,7 +56,7 @@ if (canvas) {
 
 // 지우기 버튼 이벤트 리스너
 const eraseBtn = document.getElementById("eraseBtn");
-if(eraseBtn) {
+if (eraseBtn) {
     eraseBtn.addEventListener("click", onClickEraseButton);
 }
 
@@ -65,7 +65,7 @@ if(eraseBtn) {
 // 그리기 시작 (lastOffset을 갱신)
 socket.on("stroke:start", (data) => {
     const { id, x, y } = data;
-    lastOffset[id] = {x, y};
+    lastOffset[id] = { x, y };
 });
 
 // 그리기
@@ -75,10 +75,34 @@ socket.on("stroke:draw", (data) => {
     ctx.moveTo(lastOffset[id].x, lastOffset[id].y);
     ctx.lineTo(x, y);
     ctx.stroke();
-    lastOffset[id] = {x, y};
+    lastOffset[id] = { x, y };
 });
 
 // 지우기
 socket.on("stroke:erase", () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 })
+
+// 접속 시 서버 좌표 데이터 받아서 그리기
+socket.on("serverOffset", (data) => {
+    console.log(data);
+    Object.keys(data).forEach(id => {
+        data[id].forEach(offsetData => {
+            const { state, x, y } = offsetData;
+
+            if (state == 'start') {
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+            }
+            else if(offsetData.state == 'draw') {
+                ctx.lineTo(x, y);
+                ctx.stroke();
+            }
+            else if(offsetData.state == 'end') {
+                ctx.lineTo(x, y);
+                ctx.stroke();
+                ctx.beginPath();
+            }
+        });
+    });
+});
