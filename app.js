@@ -28,7 +28,11 @@ const io = new Server(server, {
 
 io.on("connection", (socket) => {
     console.log("클라이언트 접속 : ", socket.id);
-    clearInterval(socket.interval);
+
+    socket.on("disconnect", () => {
+        console.log("클라이언트 종료 : ", socket.id);
+        clearInterval(socket.interval);
+    })
 
     // 현재 서버에 있는 좌표 데이터를 넘김
     socket.emit("serverOffset", serverOffset);
@@ -92,7 +96,7 @@ io.on("connection", (socket) => {
         if (!serverOffset[socket.id]) {
             serverOffset[socket.id] = [];
         }
-        
+
         // 서버 좌표에 데이터 추가
         serverOffset[socket.id].push({
             state: "end",
