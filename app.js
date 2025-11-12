@@ -30,16 +30,16 @@ io.on("connection", (socket) => {
     console.log("클라이언트 접속 : ", socket.id);
     clearInterval(socket.interval);
 
-    // 처음 접속하는 id일시 빈 배열 할당
-    if (!serverOffset[socket.id]) {
-        serverOffset[socket.id] = [];
-    }
-
     // 현재 서버에 있는 좌표 데이터를 넘김
     socket.emit("serverOffset", serverOffset);
 
     // 그리기 시작 (down) (시작 좌표를 보냄)
     socket.on("stroke:start", (data) => {
+
+        // key가 없을 시 빈 배열 할당
+        if (!serverOffset[socket.id]) {
+            serverOffset[socket.id] = [];
+        }
 
         // 서버 좌표에 데이터 추가
         serverOffset[socket.id].push({
@@ -62,6 +62,11 @@ io.on("connection", (socket) => {
     // 그리기 (그리는 좌표를 보냄)
     socket.on("stroke:draw", (data) => {
 
+        // key가 없을 시 빈 배열 할당
+        if (!serverOffset[socket.id]) {
+            serverOffset[socket.id] = [];
+        }
+
         // 서버 좌표에 데이터 추가
         serverOffset[socket.id].push({
             state: "draw",
@@ -82,6 +87,12 @@ io.on("connection", (socket) => {
 
     // 끝점 좌표
     socket.on("stroke:end", (data) => {
+
+        // key가 없을 시 빈 배열 할당
+        if (!serverOffset[socket.id]) {
+            serverOffset[socket.id] = [];
+        }
+        
         // 서버 좌표에 데이터 추가
         serverOffset[socket.id].push({
             state: "end",
